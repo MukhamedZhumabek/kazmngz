@@ -17,5 +17,5 @@ mkdir dev2/log
 
 touch data_generator/log/generator.log
 touch dev0/log/dev0.log
-touch dev1/logs/dev1.log
-touch dev2/logs/dev2.log
+touch dev1/log/dev1.log
+touch dev2/log/dev2.log

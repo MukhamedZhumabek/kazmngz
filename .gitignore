@@ -1,0 +1,14 @@
+
+__pypackages__/
+data_generator/
+dev0/
+dev1/
+dev2/
+logs/*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.idea/

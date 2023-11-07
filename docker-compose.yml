@@ -1,0 +1,94 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16.0
+    restart: always
+    env_file:
+      - .env.postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - tstkzmngz:/var/lib/postgresql/data
+    networks:
+      - kazmun
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    networks:
+      - kazmun
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  generator:
+    build:
+      context: ./data_generator
+    restart: on-failure
+    volumes:
+      - ./data_generator:/server
+      - ./logs/generator.log:/server/log/generator.log
+    command: python main.py 50 60
+    networks:
+      - kazmun
+    depends_on:
+      - rabbitmq
+
+  dev0:
+    build:
+      context: ./dev0
+    restart: on-failure
+    volumes:
+      - ./dev0:/server
+      - ./logs/dev0.log:/server/log/dev0.log
+    command: python main.py
+    networks:
+      - kazmun
+    depends_on:
+      - rabbitmq
+
+  dev1:
+    build:
+      context: ./dev1
+    restart: on-failure
+    volumes:
+      - ./dev1:/server
+      - ./logs/dev1.log:/server/log/dev1.log
+    command: python main.py
+    networks:
+      - kazmun
+    depends_on:
+      - rabbitmq
+
+  dev2:
+    build:
+      context: ./dev2
+    restart: on-failure
+    volumes:
+      - ./dev2:/server
+      - ./logs/dev2.log:/server/log/dev2.log
+    command: python main.py
+    networks:
+      - kazmun
+    depends_on:
+      - db
+      - rabbitmq
+
+  alembic:
+    build:
+      context: ./dev2
+    restart: on-failure
+    volumes:
+      - ./dev2:/server
+    command: alembic upgrade heads
+    networks:
+      - kazmun
+    depends_on:
+      - db
+
+networks:
+  kazmun: {}
+
+volumes:
+  tstkzmngz: {}
